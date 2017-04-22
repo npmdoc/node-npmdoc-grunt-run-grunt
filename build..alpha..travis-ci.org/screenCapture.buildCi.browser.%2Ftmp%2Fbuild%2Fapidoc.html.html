@@ -60,6 +60,12 @@
 
         </li>
 
+        <li>
+
+            <span class="apidocSignatureSpan">object <span class="apidocSignatureSpan">grunt-run-grunt.</span>parsers</span>
+
+        </li>
+
     </ol></li>
 
     <li class="apidocModuleLi"><a href="#apidoc.module.grunt-run-grunt.js">module grunt-run-grunt.js</a><ol>
@@ -81,10 +87,25 @@
 
     </ol></li>
 
+    <li class="apidocModuleLi"><a href="#apidoc.module.grunt-run-grunt.parsers">module grunt-run-grunt.parsers</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.grunt-run-grunt.parsers.parseHelp">
+            function <span class="apidocSignatureSpan">grunt-run-grunt.parsers.</span>parseHelp
+            <span class="apidocSignatureSpan">(output)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
 </ol></div>
 
 <div class="apidocSectionDiv">
 <h1><a href="#apidoc.module.grunt-run-grunt" id="apidoc.module.grunt-run-grunt">module grunt-run-grunt</a></h1>
+
+
 
 
 
@@ -104,10 +125,83 @@
     <li>description and source-code<pre class="apidocCodePre">function pluralise(count, str) {
 	return count + ' ' + str + (count === 1 ? '' : 's');
 }</pre></li>
-    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+				grunt.log.writeln(lib.nub + 'not found "' + filePath + '"'.yellow);
+				return false;
+			}
+			files.push(filePath);
+		});
+
+		if (_.isNumber(options.minimumFiles) &amp;&amp; options.minimumFiles &gt; 0 &amp;&amp; files.length &lt; options.minimumFiles
+) {
+			grunt.fail.warn('expected at least ' + lib.<span class="apidocCodeKeywordSpan">pluralise</span>(options.minimumFiles
+, 'gruntfile') + ' but ' + ('found only ' + files.length).red);
+			done();
+			return;
+		}
+		if (_.isNumber(options.maximumFiles) &amp;&amp; options.maximumFiles &gt; 0 &amp;&amp; files.length &gt; options.maximumFiles
+) {
+			grunt.fail.warn('expected at most ' + lib.pluralise(options.maximumFiles, 'gruntfile') + ' but '
+; + ('found ' + files.length).red);
+			done();
+			return;
+...</pre></li>
     </ul>
 
 
+
+
+</div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.grunt-run-grunt.parsers" id="apidoc.module.grunt-run-grunt.parsers">module grunt-run-grunt.parsers</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.grunt-run-grunt.parsers.parseHelp" id="apidoc.element.grunt-run-grunt.parsers.parseHelp">
+        function <span class="apidocSignatureSpan">grunt-run-grunt.parsers.</span>parseHelp
+        <span class="apidocSignatureSpan">(output)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function parseHelp(output) {
+	var result = {
+		task: {},
+		alias: {}
+	};
+
+	var elementMatch;
+	var nextI = 0;
+
+	startExp.lastIndex = 0;
+	var startMatch = startExp.exec(output);
+
+	if (startMatch) {
+		nextI = startMatch.index + startMatch[0].length;
+
+		// tasks
+		taskExp.lastIndex = nextI;
+		while ((elementMatch = taskExp.exec(output))) {
+			nextI = elementMatch.index + elementMatch[0].length;
+			taskExp.lastIndex = nextI;
+			//TODO add proper map object
+			result.task[elementMatch[1]] = String(elementMatch[2]);
+		}
+
+		// aliases
+		aliasRegExp.lastIndex = nextI;
+		while ((elementMatch = aliasRegExp.exec(output))) {
+			nextI = elementMatch.index + elementMatch[0].length;
+			aliasRegExp.lastIndex = nextI;
+			//TODO add proper map object
+			// restore quotes and parse as JSON array
+			result.alias[elementMatch[1]] = JSON.parse('["' + elementMatch[2] + '"]');
+		}
+	}
+	return result;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
 
 
 </div>
